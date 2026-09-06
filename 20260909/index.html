@@ -162,6 +162,7 @@
       <div style="font-size: clamp(1.1rem, min(3.5vw, 5vh), 3rem); line-height: 1.4; color: #a1a1aa;">一個針對 AI 的小型聚會</div>
       <div style="font-size: clamp(1.3rem, min(4.5vw, 6vh), 4rem); font-weight: 700; line-height: 1.5;">每一個主題，大家都能<span class="warning">喊卡</span><br>每一個主題，大家都能<span class="warning">聚焦</span></div>
       <div style="font-size: clamp(1.2rem, min(4vw, 5.5vh), 3.5rem); font-weight: 700; line-height: 1.5;">你遇到了什麼問題呢？<br><span class="highlight">一起來聊聊吧！</span></div>
+      <a class="highlight" href="https://lman-37f33d.kktix.cc/events/2c43bc25" target="_blank" rel="noopener noreferrer" style="font-size: clamp(1rem, min(3vw, 4vh), 2rem); font-weight: 700;">活動報名連結</a>
     </div>
 
     <!-- 整場封面 -->
@@ -785,7 +786,7 @@
 
     // 鍵盤與點擊控制
     document.addEventListener('keydown', (e) => {
-      if (e.target === progressBar) return;
+      if (e.target === progressBar || e.target.closest('a')) return;
       if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
         nextSlide();
       } else if (e.key === 'ArrowLeft') {
@@ -794,7 +795,7 @@
     });
 
     document.addEventListener('click', (e) => {
-      if (e.target === progressBar) return;
+      if (e.target === progressBar || e.target.closest('a')) return;
       // 點擊螢幕右側前進，左側後退
       if (e.clientX > window.innerWidth / 2) {
         nextSlide();
