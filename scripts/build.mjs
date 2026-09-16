@@ -42,7 +42,7 @@ function card(event) {
 const upcoming = events.filter(isUpcoming).sort((a,b) => a.date.localeCompare(b.date));
 const past = events.filter(event => !isUpcoming(event)).sort((a,b) => b.date.localeCompare(a.date));
 const html = read('src/index.html')
-  .replace('<!-- HERO_EVENT_LINK -->', upcoming.length ? '<a class="button" href="#upcoming">看看下一場活動 <span aria-hidden="true">↗</span></a>' : '<a class="button" href="#archive">看看我們聊過什麼 <span aria-hidden="true">↗</span></a>')
+  .replace('<!-- HERO_EVENT_LINK -->', upcoming.length ? '<a class="button" href="#upcoming">接受下一個任務 <span aria-hidden="true">↓</span></a>' : '<a class="button" href="#archive">查看任務紀錄 <span aria-hidden="true">↗</span></a>')
   .replace('<!-- UPCOMING_NAV -->', upcoming.length ? '<a href="#upcoming">近期活動</a>' : '')
   .replace('<!-- UPCOMING -->', upcoming.length ? `<section class="upcoming-section wrap" id="upcoming" aria-labelledby="upcoming-title"><p class="eyebrow">NEXT GATHERINGS</p><h2 id="upcoming-title">${escape(upcoming.length === 1 ? upcoming[0].heading || '下一場，一起聊。' : '下一場，一起聊。')}</h2>${upcoming.map(card).join('\n')}</section>` : '')
   .replace('<!-- EVENTS -->', past.length ? past.map(card).join('\n') : '<p>歷次分享將收錄在這裡。</p>');
