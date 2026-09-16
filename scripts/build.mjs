@@ -29,11 +29,12 @@ function card(event) {
   const weekday = '日一二三四五六'[new Date(event.date + 'T12:00:00+08:00').getUTCDay()];
   const [year, month, day] = event.date.split('-').map(Number);
   const info = detail ? `<p><strong>時間｜</strong>${year} 年 ${month} 月 ${day} 日（${weekday}）${escape(event.startTime)}–${escape(event.endTime)}<br><strong>地點｜</strong>${text(event.location)}<br><strong>參加方式｜</strong>${text(event.participation)}</p>` : '';
-  return `<article class="event-card">
+  const eventId = `event-${event.date}`;
+  return `<article class="event-card" id="${eventId}">
     <div class="event-date"><time datetime="${event.date}">${event.date.replaceAll('-', '.')}</time><span class="event-status">${upcoming ? '近期活動' : '歷次分享'}</span></div>
     <div class="event-body${detail ? ' upcoming-body' : ''}"><h3>${escape(event.title)}</h3><p>${detail ? `<strong>${text(event.summary)}</strong>` : text(event.summary)}</p>${detail ? event.paragraphs.map(p => `<p>${text(p)}</p>`).join('') + info : ''}
       <ul class="tags" aria-label="分享主題">${event.topics.map(topic => `<li>${escape(topic)}</li>`).join('')}</ul>
-      <div class="event-actions">${event.slides ? `<a class="button" href="${escape(event.slides)}" aria-label="閱讀 ${escape(event.title)} 簡報">閱讀簡報 <span aria-hidden="true">↗</span></a>` : ''}${event.registration ? `<a class="${upcoming ? 'button' : 'text-link'}" href="${escape(event.registration)}">${upcoming ? escape(event.registrationLabel || '活動詳情與報名') : '當場活動資訊（KKTIX）'} <span aria-hidden="true">↗</span></a>` : ''}</div>
+      <div class="event-actions">${event.slides ? `<a class="button" href="${escape(event.slides)}" aria-label="閱讀 ${escape(event.title)} 簡報">閱讀簡報 <span aria-hidden="true">↗</span></a>` : ''}${event.registration ? `<a class="${upcoming ? 'button' : 'text-link'}" href="${escape(event.registration)}">${upcoming ? escape(event.registrationLabel || '活動詳情與報名') : '當場活動資訊（KKTIX）'} <span aria-hidden="true">↗</span></a>` : ''}<a class="text-link event-permalink" href="#${eventId}" aria-label="${escape(event.title)}的固定網址">活動網址 <span aria-hidden="true">#</span></a></div>
     </div>
   </article>`;
 }
