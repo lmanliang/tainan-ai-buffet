@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>友軍活動｜台南AI爽</title>
+  <meta name="description" content="台南AI爽是在台南舉辦的 AI 小型聚會，聊 AI 應用與實際使用遇到的問題。每個主題都能喊卡、都能聚焦。查看近期活動、歷次分享與簡報。">
+  <link rel="canonical" href="https://lmanliang.github.io/tainan-ai-buffet/friends.html">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_TW">
+  <meta property="og:site_name" content="台南AI爽">
+  <meta property="og:title" content="友軍活動｜台南AI爽">
+  <meta property="og:description" content="在台南舉辦的 AI 小型聚會，聊 AI 應用與實際使用遇到的問題。每個主題都能喊卡、都能聚焦。活動資訊與歷次簡報，都在這裡。">
+  <meta property="og:url" content="https://lmanliang.github.io/tainan-ai-buffet/friends.html">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#f5f2e9">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/site.css">
+  <style>
+
+.site-header nav{flex-wrap:wrap}.site-header nav [aria-current="page"]{text-decoration:underline;text-decoration-color:#557b35;text-decoration-thickness:2px;text-underline-offset:8px}
+.friends-main{padding-block:64px 100px;min-height:calc(100vh - 210px)}.friends-main .eyebrow{color:var(--muted)}.friends-main h1{font-size:clamp(36px,5vw,56px);margin:18px 0}.friends-intro{color:var(--muted);font-size:17px;line-height:1.9}.preview-note{margin:32px 0 16px;padding:10px 16px;border-left:3px solid #aa693d;background:#fae8d8;font-size:13px}.friends-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:#fffdf6}.friends-table{width:100%;border-collapse:collapse;text-align:left;min-width:760px}.friends-table th{background:#e9eddf;padding:17px 22px;font-size:13px;font-weight:650;white-space:nowrap}.friends-table td{padding:26px 22px;vertical-align:top;border-top:1px solid var(--line);font-size:15px}.friends-table th:nth-child(1){width:17%}.friends-table th:nth-child(2){width:25%}.friends-table th:nth-child(3){width:21%}.format-tag{display:inline-block;background:var(--green);border-radius:4px;padding:1px 8px;font-size:12px}.format-tag.online{background:#e1e8f2}.venue,.event-hours,.example-label{display:block;margin-top:7px}.event-hours{font-size:13px;color:var(--muted)}.example-label{font-size:11px;color:var(--muted)}.friend-event-name{font-weight:750;font-size:17px}.friends-footnote{margin-top:18px;font-size:12px;color:var(--muted)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:600px){.friends-main{padding-block:36px 60px}.friends-intro{font-size:15px}.friends-table th,.friends-table td{padding:16px}.friends-table{min-width:720px}.preview-note{margin-top:24px}}
+
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要內容</a>
+  <header class="site-header wrap">
+    <a class="brand" href="./" aria-label="台南AI爽首頁"><span class="brand-mark" aria-hidden="true">爽</span><span>台南AI爽<small>TAINAN AI BUFFET</small></span></a>
+    <nav aria-label="主要導覽"><a href="./#upcoming">近期活動</a><a href="./#about">關於聚會</a><a href="./#archive">歷次分享</a><a href="friends.html" aria-current="page">友軍活動</a></nav>
+  </header>
+  <main id="main" class="friends-main wrap">
+    <section aria-labelledby="friends-title">
+      <p class="eyebrow">FRIENDS &amp; GATHERINGS</p>
+      <h1 id="friends-title">友軍活動</h1>
+      <p class="friends-intro">朋友們也在辦活動！<br>分享友軍主辦的 AI 聚會，歡迎串門子、一起交流。</p>
+
+      <div class="friends-table-wrap" style="margin-top:32px">
+        <table class="friends-table">
+          <caption class="sr-only">友軍活動，依活動時間由新到舊排列</caption>
+          <thead><tr><th scope="col">主辦</th><th scope="col">活動地點（線上／線下）</th><th scope="col">活動時間</th><th scope="col">活動名稱</th></tr></thead>
+          <tbody id="friends-events"><tr><td colspan="4">活動載入中…</td></tr></tbody>
+        </table>
+      </div>
+      <p class="friends-footnote">活動由各主辦單位舉辦，最新資訊請以活動原頁為準。時間皆為台灣時間。</p>
+    </section>
+  </main>
+  <footer class="site-footer wrap"><a class="footer-brand" href="./">台南AI爽<span>帶著問題，一起聊 AI。</span></a><a href="./">回到首頁 <span aria-hidden="true">↗</span></a></footer>
+<script>
+(() => {
+  const body = document.getElementById('friends-events');
+  const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
+  fetch('data/friends.json', {cache:'no-cache'})
+    .then(response => { if (!response.ok) throw Error('Loading failed'); return response.json(); })
+    .then(events => {
+      const visible = events.filter(event => !event.endsAt || Date.parse(event.endsAt) > Date.now())
+        .sort((a,b) => Date.parse(b.sortDate) - Date.parse(a.sortDate));
+      body.innerHTML = visible.map(event => `<tr>
+        <td>${escape(event.organizer)}<span class="example-label">${escape(event.contact)}</span></td>
+        <td><span class="format-tag${event.format === '線上' ? ' online' : ''}">${escape(event.format)}</span><span class="venue">${escape(event.location)}</span><span class="example-label">${escape(event.locationNote)}</span></td>
+        <td>${event.dates.map(escape).join('<br>')}<span class="event-hours">${escape(event.hours)}</span><span class="example-label">${escape(event.note)}</span></td>
+        <td>${event.url.startsWith('https://') ? `<a class="friend-event-name" href="${escape(event.url)}">${escape(event.title)} ↗</a>` : escape(event.title)}<span class="example-label">${escape(event.description)}</span></td>
+      </tr>`).join('') || '<tr><td colspan="4">目前沒有近期友軍活動。</td></tr>';
+    })
+    .catch(() => { body.innerHTML = '<tr><td colspan="4">活動資料暫時無法載入，請重新整理。</td></tr>'; });
+})();
+</script>
+</body>
+</html>
