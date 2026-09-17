@@ -18,7 +18,7 @@ for (const event of events) {
   if (!event.title?.trim() || !event.summary?.trim() || !Array.isArray(event.topics)) throw Error('Missing event content');
   if (seen.has(event.date)) throw Error(`Duplicate event date: ${event.date}`);
   seen.add(event.date);
-  if (event.slides && (!/^[\w-]+\/$/.test(event.slides) || !existsSync(resolve(root, event.slides, 'index.html')))) throw Error(`Missing or invalid slides: ${event.slides}`);
+  if (event.slides && (!/^event\/\d{8}\/$/.test(event.slides) || !existsSync(resolve(root, event.slides, 'index.html')))) throw Error(`Missing or invalid slides: ${event.slides}`);
   if (event.registration && new URL(event.registration).protocol !== 'https:') throw Error('Registration URL must use HTTPS');
 }
 
