@@ -7,6 +7,7 @@ const read = path => readFileSync(resolve(root, path), 'utf8');
 const escape = text => String(text).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const base = 'https://minicourse.dev/';
 const events = JSON.parse(read('data/events.json'));
+const skills = JSON.parse(read('data/skills.json'));
 const now = process.env.EVENTS_NOW ? Date.parse(process.env.EVENTS_NOW) : Date.now();
 if (!Number.isFinite(now)) throw Error('Invalid EVENTS_NOW');
 const isUpcoming = event => event.endsAt ? Date.parse(event.endsAt) > now : event.status === 'upcoming';
@@ -20,6 +21,11 @@ for (const event of events) {
   seen.add(event.date);
   if (event.slides && (!/^event\/\d{8}\/$/.test(event.slides) || !existsSync(resolve(root, event.slides, 'index.html')))) throw Error(`Missing or invalid slides: ${event.slides}`);
   if (event.registration && new URL(event.registration).protocol !== 'https:') throw Error('Registration URL must use HTTPS');
+}
+
+for (const skill of skills) {
+  if (!skill.name?.trim() || !skill.category?.trim() || !skill.title?.trim() || !skill.summary?.trim() || !skill.example?.trim() || !skill.origin?.trim()) throw Error('Missing skill content');
+  if (!skill.url || new URL(skill.url).protocol !== 'https:') throw Error(`Skill URL must use HTTPS: ${skill.name}`);
 }
 
 function card(event) {
@@ -39,6 +45,16 @@ function card(event) {
   </article>`;
 }
 
+function skillCard(skill) {
+  return `<article class="skill-card">
+    <div class="skill-card-heading"><span class="skill-category">${escape(skill.category)}</span><code>${escape(skill.name)}</code></div>
+    <h3>${escape(skill.title)}</h3>
+    <p>${escape(skill.summary)}</p>
+    <div class="skill-example"><span>你可以這樣說</span><q>${escape(skill.example)}</q></div>
+    <div class="skill-actions"><a class="button" href="${escape(skill.url)}" target="_blank" rel="noopener noreferrer">查看使用方式 <span aria-hidden="true">↗</span></a><span>${escape(skill.origin)}</span></div>
+  </article>`;
+}
+
 // Classify at build time using the event end time; legacy records retain explicit status.
 const upcoming = events.filter(isUpcoming).sort((a,b) => a.date.localeCompare(b.date));
 const past = events.filter(event => !isUpcoming(event)).sort((a,b) => b.date.localeCompare(a.date));
@@ -46,6 +62,7 @@ const html = read('src/index.html')
   .replace('<!-- HERO_EVENT_LINK -->', upcoming.length ? '<a class="button" href="#upcoming">接受下一個任務 <span aria-hidden="true">↓</span></a>' : '<a class="button" href="#archive">查看任務紀錄 <span aria-hidden="true">↗</span></a>')
   .replace('<!-- UPCOMING_NAV -->', upcoming.length ? '<a href="#upcoming">近期活動</a>' : '')
   .replace('<!-- UPCOMING -->', upcoming.length ? `<section class="upcoming-section wrap" id="upcoming" aria-labelledby="upcoming-title"><p class="eyebrow">NEXT GATHERINGS</p><h2 id="upcoming-title">${escape(upcoming.length === 1 ? upcoming[0].heading || '下一場，一起聊。' : '下一場，一起聊。')}</h2>${upcoming.map(card).join('\n')}</section>` : '')
+  .replace('<!-- SKILLS -->', skills.length ? skills.map(skillCard).join('\n') : '<p>實用 Skill 將收錄在這裡。</p>')
   .replace('<!-- EVENTS -->', past.length ? past.map(card).join('\n') : '<p>歷次分享將收錄在這裡。</p>');
 const urls = [base, base + 'friends.html', ...new Set(events.filter(event => event.slides).map(event => base + event.slides))];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(url => `  <url><loc>${escape(url)}</loc></url>`).join('\n')}\n</urlset>\n`;
@@ -54,4 +71,4 @@ for (const [path, content] of [['index.html', html], ['sitemap.xml', sitemap]]) 
     if (!existsSync(resolve(root, path)) || read(path) !== content) throw Error(`${path} is stale; run npm run build`);
   } else writeFileSync(resolve(root, path), content);
 }
-console.log(`${process.argv.includes('--check') ? 'Checked' : 'Built'} homepage and sitemap: ${past.length} past, ${upcoming.length} upcoming.`);
+console.log(`${process.argv.includes('--check') ? 'Checked' : 'Built'} homepage and sitemap: ${past.length} past, ${upcoming.length} upcoming, ${skills.length} skills.`);
