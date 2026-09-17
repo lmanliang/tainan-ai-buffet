@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const read = path => readFileSync(resolve(root, path), 'utf8');
 const escape = text => String(text).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const base = 'https://lmanliang.github.io/tainan-ai-buffet/';
+const base = 'https://minicourse.dev/';
 const events = JSON.parse(read('data/events.json'));
 const now = process.env.EVENTS_NOW ? Date.parse(process.env.EVENTS_NOW) : Date.now();
 if (!Number.isFinite(now)) throw Error('Invalid EVENTS_NOW');
@@ -47,7 +47,7 @@ const html = read('src/index.html')
   .replace('<!-- UPCOMING_NAV -->', upcoming.length ? '<a href="#upcoming">近期活動</a>' : '')
   .replace('<!-- UPCOMING -->', upcoming.length ? `<section class="upcoming-section wrap" id="upcoming" aria-labelledby="upcoming-title"><p class="eyebrow">NEXT GATHERINGS</p><h2 id="upcoming-title">${escape(upcoming.length === 1 ? upcoming[0].heading || '下一場，一起聊。' : '下一場，一起聊。')}</h2>${upcoming.map(card).join('\n')}</section>` : '')
   .replace('<!-- EVENTS -->', past.length ? past.map(card).join('\n') : '<p>歷次分享將收錄在這裡。</p>');
-const urls = [base, ...new Set(events.filter(event => event.slides).map(event => base + event.slides))];
+const urls = [base, base + 'friends.html', ...new Set(events.filter(event => event.slides).map(event => base + event.slides))];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(url => `  <url><loc>${escape(url)}</loc></url>`).join('\n')}\n</urlset>\n`;
 for (const [path, content] of [['index.html', html], ['sitemap.xml', sitemap]]) {
   if (process.argv.includes('--check')) {

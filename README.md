@@ -2,7 +2,7 @@
 
 一個針對 AI 的小型聚會。每一個主題，大家都能喊卡、都能聚焦。帶著你遇到的問題，一起聊聊。
 
-[官方網站](https://lmanliang.github.io/tainan-ai-buffet/) · [第一場簡報：AI 說可以](https://lmanliang.github.io/tainan-ai-buffet/20260909/)
+[官方網站](https://minicourse.dev/) · [第一場簡報：AI 說可以](https://minicourse.dev/20260909/)
 
 ## 網站維護
 
@@ -45,7 +45,7 @@
 
 首頁與第一場簡報已設定繁體中文、標題、描述、canonical 與社群分享文字。首頁提供 WebSite 結構化資料；`sitemap.xml` 列出首頁和已有簡報的場次。
 
-上線後可在 Search Console 新增網址前綴資源 `https://lmanliang.github.io/tainan-ai-buffet/`，完成擁有權驗證，再提交 `sitemap.xml`。此步需要網站擁有者的 Google 帳號。
+上線後可在 Search Console 新增網域資源 `minicourse.dev`，完成擁有權驗證，再提交 `sitemap.xml`。此步需要網站擁有者的 Google 帳號。
 
 GitHub Pages 專案站的 `robots.txt` 必須由網域根目錄管理，放在本專案子路徑下不會成為該網域的有效規則，因此本專案不另加無效的 robots 檔案。若更換正式網域，需同步更新首頁模板、簡報 metadata 與 `scripts/build.mjs` 的網站網址。
 
