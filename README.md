@@ -4,54 +4,65 @@
 
 [官方網站](https://minicourse.dev/) · [第一場簡報：AI 說可以](https://minicourse.dev/event/20260909/)
 
-## 網站維護
+## 網站架構
 
-官網沿用 GitHub Pages，「下一場」保留完整靜態 HTML，搜尋引擎可直接讀取；「聊過的」由前端 JavaScript 讀取同一份活動 JSON，依瀏覽當下的時間更新。不需要安裝套件或後端服務；產生首頁使用 Node.js 18 以上版本。
+官網使用 Astro 產生純靜態 HTML，由 GitHub Pages 透過自訂網域 `minicourse.dev` 提供。頁面不使用 React、Vue 或用戶端 hydration。
 
-- `src/index.html`：首頁內容與版型。
-- `assets/site.css`：首頁樣式。
-- `data/events.json`：所有場次資料。
-- `index.html`、`sitemap.xml`：產生後提交的網站檔案，請勿直接編輯。
-- `event/YYYYMMDD/index.html`：各場活動簡報，以八位日期目錄統一管理。
+- `src/pages/`：首頁、串門子、JSON 與 sitemap 輸出。
+- `src/components/`：共用導覽、頁尾、活動卡與 Skill 卡。
+- `src/layouts/BaseLayout.astro`：共用 metadata 與網站外框。
+- `src/data/`：活動、友站活動與 Skill 的單一資料來源。
+- `src/lib/data.ts`：建置時 schema 驗證與活動分類。
+- `public/`：需要保留原網址的 CSS、JavaScript、簡報、CNAME、robots.txt 與 Search Console 驗證檔。
+- `scripts/check-build.mjs`：驗證正式路由、CNAME、sitemap 與公開 JSON。
 
-### 新增場次
+## 本機開發
 
-1. 將新簡報放入 `YYYYMMDD/index.html`，並加入返回 `../` 官網的連結。
-2. 在 `data/events.json` 新增一筆場次（見下方格式）。未有簡報或報名網址時，對應欄位填 `null`。
-3. 執行 `npm run build`，再執行 `npm run check`。
-4. 將場次資料、新簡報以及產生的 `index.html`、`sitemap.xml` 一起提交，沿用現有 GitHub Pages 發布設定。
+需要 Node.js 24 以上。
 
-```json
-{
-  "date": "YYYY-MM-DD",
-  "title": "本場主題",
-  "summary": "本場介紹",
-  "slides": null,
-  "registration": null,
-  "status": "upcoming",
-  "topics": ["主題標籤"]
-}
+```bash
+npm install
+npm run dev
 ```
 
-新活動使用 `endsAt` 記錄含台灣時區的結束時間，例如 `2026-10-06T21:00:00+08:00`。建置時依此時間分類為近期或歷次活動，不需要再手動修改狀態；舊資料仍支援 `status`。近期依日期由近到遠、歷次由新到舊排列。發布後，「聊過的」會在每次開啟頁面時讀取 JSON，將已結束的活動依日期由新到舊列出，不需要為活動結束重新建置、發布或修改狀態。「下一場」不受前端程式影響，保留發布時的靜態 HTML，等新增或修改活動時再建置更新。讀取 JSON 失敗時保留既有歷次內容。
+完整驗證：
 
-`slides` 是相對於網站根目錄的簡報資料夾，格式為 `event/YYYYMMDD/`，例如 `event/20260909/`；`registration` 是該場 KKTIX 網址。歷次場次的 KKTIX 連結標為活動資訊，不當成新場次報名入口。
+```bash
+npm run check
+```
 
-### 本機預覽
+這會依序執行 Astro 型別檢查、靜態建置與公開路由相容性檢查。產物位於 `dist/`，不提交進 Git。
 
-在專案根目錄執行 `python3 -m http.server 8080`，開啟 `http://localhost:8080/`。正式網站位於 `/tainan-ai-buffet/` 子路徑，因此內部連結使用相對網址。
+## 公開路由
 
-### SEO 與正式上線
+以下路由是相容性要求，不可在一般改版中變更：
 
-首頁與第一場簡報已設定繁體中文、標題、描述、canonical 與社群分享文字。首頁提供 WebSite 結構化資料；`sitemap.xml` 列出首頁和已有簡報的場次。
+- `/`
+- `/friends.html`
+- `/event/20260909/`
+- `/data/events.json`
+- `/data/friends.json`
+- `/data/skills.json`
+- `/sitemap.xml`
+- `/robots.txt`
+- `/google0dd0e2c38ab50487.html`
 
-上線後可在 Search Console 新增網域資源 `minicourse.dev`，完成擁有權驗證，再提交 `sitemap.xml`。此步需要網站擁有者的 Google 帳號。
+Astro 使用 `build.format: 'preserve'`，同時保留 `friends.html` 與簡報目錄式網址。
 
-GitHub Pages 專案站的 `robots.txt` 必須由網域根目錄管理，放在本專案子路徑下不會成為該網域的有效規則，因此本專案不另加無效的 robots 檔案。若更換正式網域，需同步更新首頁模板、簡報 metadata 與 `scripts/build.mjs` 的網站網址。
+## 新增自辦活動
 
-### 完整活動內容
+1. 在 `src/data/events.json` 新增場次。
+2. 若已有簡報，放在 `public/event/YYYYMMDD/index.html`，並將 `slides` 設為 `event/YYYYMMDD/`。
+3. 執行 `npm run check`。
 
-新增或修改自辦活動只需維護 `data/events.json`，再執行 `npm run build` 與 `npm run check`。
-10/6 場次可作為完整範例：`heading` 是近期區標題、`summary` 是摘要、`paragraphs` 是多段介紹（換行用 `\n`），`startTime`／`endTime` 是顯示時間，`endsAt` 是分類依據，`location`／`participation` 是地點與參加方式，`registrationLabel` 是報名按鈕文字。文字會跳脫 HTML。
+`endsAt` 使用含台灣時區的 ISO 8601 時間，例如 `2026-10-06T21:00:00+08:00`。首頁建置時會產生完整活動 HTML；`archive.js` 仍會在開頁時依瀏覽者的當下時間更新歷次活動，不需要為活動結束額外發布。
 
-歸入歷次後顯示摘要與既有連結；尚未有簡報時不會出現簡報按鈕。保留舊場次資料即可，之後取得簡報再填入 `slides`。
+## 部署
+
+Push 到 `main` 後，`.github/workflows/deploy.yml` 會：
+
+1. 執行 `npm run check`。
+2. 上傳 `dist/` 為 GitHub Pages artifact。
+3. 部署到 GitHub Pages。
+
+Repository 的 Pages 來源需設為 **GitHub Actions**，Custom domain 保留 `minicourse.dev`。`public/CNAME` 作為專案內的網域紀錄，正式綁定仍以 GitHub Pages 設定為準。

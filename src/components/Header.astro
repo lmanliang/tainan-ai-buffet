@@ -1,0 +1,19 @@
+---
+interface Props {
+  home?: boolean;
+  hasUpcoming?: boolean;
+}
+const { home = false, hasUpcoming = false } = Astro.props;
+const prefix = home ? '' : '/';
+---
+<a class="skip-link" href="#main">跳到主要內容</a>
+<header class="site-header wrap">
+  <a class="brand" href="/" aria-label="台南AI爽首頁"><span class="brand-mark" aria-hidden="true">爽</span><span>台南AI爽<small>TAINAN AI BUFFET</small></span></a>
+  <nav aria-label="主要導覽">
+    {hasUpcoming && <a href={`${prefix}#upcoming`}>近期活動</a>}
+    <a href={`${prefix}#about`}>關於聚會</a>
+    {home && <a href="#skills">帶走就能用</a>}
+    <a href={`${prefix}#archive`}>歷次分享 {home && <span aria-hidden="true">↗</span>}</a>
+    <a href="https://github.com/minicoursedev/tainan-ai-buffet/issues">意見回饋</a>
+  </nav>
+</header>
